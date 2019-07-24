@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 
 @Configuration
 public class SparkConfig {
+
     @Value("${spark.app.name}")
     private String appName;
     @Value("${spark.master}")

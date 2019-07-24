@@ -8,104 +8,135 @@
 		<version>2.1.6.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.latitude55</groupId>
+	<groupId>com.skbm</groupId>
 	<artifactId>bookkeeper</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>bookkeeper</name>
-	<description>Demo project for Spring Boot</description>
-	<packaging>jar</packaging>
+	<description>Analitics system core</description>
 
 	<properties>
 		<java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <encoding>UTF-8</encoding>
+        <spark.version>2.4.3</spark.version>
+        <scala.version>2.11.12</scala.version>
+        <scala.compat.version>2.11</scala.compat.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.scala-lang</groupId>
-			<artifactId>scala-library</artifactId>
-			<version>2.11.12</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
-			<groupId>com.thoughtworks.paranamer</groupId>
-			<artifactId>paranamer</artifactId>
-			<version>2.8</version>
+			<groupId>org.springframework.restdocs</groupId>
+			<artifactId>spring-restdocs-mockmvc</artifactId>
+			<scope>test</scope>
 		</dependency>
-
 		<dependency>
-			<groupId>org.apache.spark</groupId>
-			<artifactId>spark-core_2.12</artifactId>
-			<version>2.4.0</version>
+			<groupId>org.scala-lang</groupId>
+			<artifactId>scala-library</artifactId>
+			<version>${scala.version}</version>
 		</dependency>
-
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_${scala.compat.version}</artifactId>
+            <version>${spark.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_${scala.compat.version}</artifactId>
+            <version>${spark.version}</version>
+            <scope>provided</scope>
+        </dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<version>1.5.3</version>
 				<executions>
 					<execution>
+						<id>generate-docs</id>
+						<phase>prepare-package</phase>
 						<goals>
-							<goal>repackage</goal>
+							<goal>process-asciidoc</goal>
 						</goals>
+						<configuration>
+							<backend>html</backend>
+							<doctype>book</doctype>
+						</configuration>
 					</execution>
 				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.springframework.restdocs</groupId>
+						<artifactId>spring-restdocs-asciidoctor</artifactId>
+						<version>${spring-restdocs.version}</version>
+					</dependency>
+				</dependencies>
 			</plugin>
-
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
 			<plugin>
 				<groupId>net.alchim31.maven</groupId>
 				<artifactId>scala-maven-plugin</artifactId>
+				<version>4.1.1</version>
 				<executions>
 					<execution>
-						<id>scala-compile-first</id>
-						<phase>process-resources</phase>
 						<goals>
-							<goal>add-source</goal>
 							<goal>compile</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>scala-test-compile</id>
-						<phase>process-test-resources</phase>
-						<goals>
 							<goal>testCompile</goal>
 						</goals>
 					</execution>
 				</executions>
 			</plugin>
-			<!-- This plugin compiles Java files -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>com.latitude55.bookkeeper.BookkeeperApplication</mainClass>
+						</manifest>
+					</archive>
 				</configuration>
 				<executions>
 					<execution>
-						<phase>compile</phase>
+						<phase>package</phase>
 						<goals>
-							<goal>compile</goal>
+							<goal>single</goal>
 						</goals>
 					</execution>
 				</executions>
